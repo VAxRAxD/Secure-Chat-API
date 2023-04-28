@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse,Response
 from fastapi.openapi.docs import get_swagger_ui_html
 from pydantic import BaseModel
+import uvicorn
 #Libraries for encryption & decryption
 from cryptography.fernet import Fernet
 
@@ -43,3 +44,6 @@ def encryptPlayload(data : str):
      keydata=dataEncryption(data)
      crypto={'key':keydata[0],'data':keydata[1]}
      return crypto
+
+if __name__ == '__main__':
+    uvicorn.run(app, port=80, host='0.0.0.0')
