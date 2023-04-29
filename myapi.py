@@ -1,5 +1,5 @@
 #Libraries for api
-from fastapi import FastAPI,status
+from fastapi import FastAPI,UploadFile,status
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse,Response
 from fastapi.openapi.docs import get_swagger_ui_html
@@ -7,6 +7,7 @@ from pydantic import BaseModel
 import uvicorn
 #Libraries for encryption & decryption
 from cryptography.fernet import Fernet
+import string,base64
 
 #Code for encryption & decryption 
 def dataEncryption(data):
@@ -41,9 +42,9 @@ def home():
 
 @app.post("/encrypt-data")
 def encryptPlayload(data : str):
-     keydata=dataEncryption(data)
-     crypto={'key':keydata[1],'data':keydata[0]}
-     return crypto
+    keydata=dataEncryption(data)
+    crypto={'key':keydata[1],'data':keydata[0]}
+    return crypto
 
 @app.post("/decrypt-data")
 def decrpytoPlayload(data:Payload):
@@ -51,5 +52,37 @@ def decrpytoPlayload(data:Payload):
     crypto={'message':token}
     return crypto     
 
+@app.post("/encrypt-img")
+async def encryptImage(file: UploadFile):
+    data=await file.read()
+    data=base64.b64encode(data)
+    byte=data.decode('utf-8')
+    token=str()
+    for char in byte:
+        if char in string.ascii_letters:
+            token+=string.ascii_letters[len(string.ascii_letters)-1-string.ascii_letters.index(char)]
+        else:
+            token+=char
+    with open("token.txt", "w") as f:
+        f.write(token)
+    return FileResponse("token.txt", media_type="text/plain")
+
+@app.post("/decrypt-img")
+async def decryptImage(file: UploadFile):
+    token= await file.read()
+    token=token.decode('utf-8')
+    byte=str()
+    for char in token:
+        if char in string.ascii_letters:
+            byte+=string.ascii_letters[len(string.ascii_letters)-1-string.ascii_letters.index(char)]
+        else:
+            byte+=char
+    byte=bytes(byte,'utf-8')
+    img=open('store.png','wb')
+    img.write(base64.b64decode((byte)))
+    img.close()
+    return FileResponse("store.png", media_type="image/jpeg")
+
+
 if __name__ == '__main__':
-    uvicorn.run(app, port=80, host='0.0.0.0')
+    uvicorn.run(app, port=8000, host='0.0.0.0')
