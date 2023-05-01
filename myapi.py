@@ -34,7 +34,6 @@ class Text(BaseModel):
 app=FastAPI(docs_url=None)
 app.add_middleware(
     HTTPSRedirectMiddleware,
-    CORSMiddleware,
     allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
