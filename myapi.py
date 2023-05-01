@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse,Response
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from pydantic import BaseModel
 from mangum import Mangum
 import uvicorn
@@ -32,6 +33,7 @@ class Text(BaseModel):
 
 app=FastAPI(docs_url=None)
 app.add_middleware(
+    HTTPSRedirectMiddleware,
     CORSMiddleware,
     allow_origins=["*"],
     allow_methods=["*"],
