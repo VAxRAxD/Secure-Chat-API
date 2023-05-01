@@ -3,6 +3,7 @@ from fastapi import FastAPI,UploadFile,status
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse,Response
 from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from mangum import Mangum
 import uvicorn
@@ -27,6 +28,12 @@ class Payload(BaseModel):
      data: str
 
 app=FastAPI(docs_url=None)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 handler=Mangum(app)
 
