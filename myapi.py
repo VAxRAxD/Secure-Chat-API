@@ -84,3 +84,6 @@ async def decryptImage(file: UploadFile):
     img.write(base64.b64decode((byte)))
     img.close()
     return FileResponse("store.png", media_type="image/jpeg")
+
+if __name__ == '__main__':
+    uvicorn.run(app, port=80, host='0.0.0.0')
