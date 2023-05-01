@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse,Response
 from fastapi.openapi.docs import get_swagger_ui_html
 from pydantic import BaseModel
+from mangum import Mangum
 import uvicorn
 #Libraries for encryption & decryption
 from cryptography.fernet import Fernet
@@ -27,6 +28,7 @@ class Payload(BaseModel):
 
 app=FastAPI(docs_url=None)
 app.mount("/static", StaticFiles(directory="static"), name="static")
+handler=Mangum(app)
 
 @app.get("/docs")
 def overridden_swagger():
@@ -82,7 +84,3 @@ async def decryptImage(file: UploadFile):
     img.write(base64.b64decode((byte)))
     img.close()
     return FileResponse("store.png", media_type="image/jpeg")
-
-
-if __name__ == '__main__':
-    uvicorn.run(app, port=80, host='0.0.0.0')
