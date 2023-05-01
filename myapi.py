@@ -27,6 +27,9 @@ class Payload(BaseModel):
      key: str
      data: str
 
+class Text(BaseModel):
+    data:str
+
 app=FastAPI(docs_url=None)
 app.add_middleware(
     CORSMiddleware,
@@ -50,8 +53,8 @@ def home():
     return Response(status_code=status.HTTP_200_OK)
 
 @app.post("/encrypt-data")
-def encryptPlayload(data : str):
-    keydata=dataEncryption(data)
+def encryptPlayload(data : Text):
+    keydata=dataEncryption(data.data)
     crypto={'key':keydata[1],'data':keydata[0]}
     return crypto
 
